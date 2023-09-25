@@ -2,7 +2,7 @@
 	"name": "vscode-command-runner",
 	"displayName": "Command Runner",
 	"description": "vscode custom shell command runner",
-	"version": "0.0.124",
+	"version": "0.0.201",
 	"icon": "images/logo.png",
 	"publisher": "edonet",
 	"engines": {
@@ -104,7 +104,14 @@
 					"default": true,
 					"description": "Show 'Run Command' in explorer context menu",
 					"scope": "resource"
+				},
+				"command-runner.customCommandsFile": {
+					"type": "string",
+					"default": "custom-commands.json",
+					"description": "Specify the path to the custom commands JSON file.",
+					"scope": "resource"
 				}
+				
 			}
 		},
 		"keybindings": [

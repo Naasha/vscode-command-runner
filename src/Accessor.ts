@@ -14,6 +14,7 @@
  */
 import * as vscode from 'vscode';
 import variable from './helpers/variable';
+import * as fs from 'fs';
 
 
 /**
@@ -64,6 +65,28 @@ export type VariableScope = keyof typeof variableMap;
  */
 export default class Accessor {
 
+    private _customCommands: Record<string, string>;
+
+    public constructor() {
+
+        this._customCommands = this.loadCustomCommands(); // Charge les commandes personnalisées lors de l'initialisation
+    }
+
+    /**
+    * Charge les commandes personnalisées depuis le fichier spécifié dans la configuration.
+    */
+    private loadCustomCommands(): Record<string, string> {
+        const settings = vscode.workspace.getConfiguration('command-runner') as unknown as CommandRunnerSettings;
+        const customCommandsFile = settings.customCommandsFile;
+        try {
+            const fileContent = fs.readFileSync(customCommandsFile, 'utf-8');
+            return JSON.parse(fileContent);
+        } catch (error) {
+            console.error('Error loading custom commands:', error);
+            return {};
+        }
+    }
+
     /* 变量缓存对象 */
     private $variable = variable();
 
@@ -94,7 +117,16 @@ export default class Accessor {
 
     /* 获取命令集 */
     commands(): Record<string, string> {
-        return this.$variable.commands();
+        const customCommands = this.customCommands(); // Obtenez vos commandes personnalisées
+        const defaultCommands = this.$variable.commands(); // Obtenez les autres commandes
+    
+        /* Fusionnez les deux en un seul objet */
+        return { ...customCommands, ...defaultCommands };
+    }
+    
+
+    customCommands(): Record<string, string> {
+        return this._customCommands;
     }
 
     /* 获取输入 */
